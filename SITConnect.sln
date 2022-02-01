@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.31624.102
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SITConnect", "SITConnect.csproj", "{702AFD7E-7473-4C50-9E9B-D164EB6ADE95}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{702AFD7E-7473-4C50-9E9B-D164EB6ADE95}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{702AFD7E-7473-4C50-9E9B-D164EB6ADE95}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{702AFD7E-7473-4C50-9E9B-D164EB6ADE95}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{702AFD7E-7473-4C50-9E9B-D164EB6ADE95}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {49E1A893-F7C1-439E-A847-1150C8F30421}
+	EndGlobalSection
+EndGlobal

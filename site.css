@@ -1,0 +1,36 @@
+﻿/* Password stuff */
+
+.show-pass {
+    position: absolute;
+    top: 5%;
+    right: 8%;
+}
+
+.progress {
+    height: 3px !important;
+}
+
+.progress-bar-danger {
+    background-color: #e90f10;
+}
+
+.progress-bar-warning {
+    background-color: #ffad00;
+}
+
+.progress-bar-success {
+    background-color: #02b502;
+}
+
+.fa-eye {
+    color: #022255;
+    cursor: pointer;
+}
+
+.fa-circle {
+    font-size: 6px;
+}
+
+.fa-check {
+    color: #02b502;
+}
