@@ -3,6 +3,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Data;
 using System.Data.SqlClient;
+using System.Text.RegularExpressions;
 
 namespace SITConnect
 {
@@ -19,7 +20,7 @@ namespace SITConnect
         }
         protected void btn_Submit_Click(object sender, EventArgs e)
         {
-            string pwd = tb_password.Text.ToString().Trim(); 
+            string pwd = tb_password.Text.ToString().Trim();
 
             //Generate random "salt"
             RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
@@ -76,6 +77,46 @@ namespace SITConnect
             {
                 throw new Exception(ex.ToString());
             }
+        }
+        private int checkPassword(string password)
+        {
+            int score = 0;
+
+            // if length of password is less than 8 chars
+            if (password.Length < 8)
+            {
+                return 1;
+            }
+            else
+            {
+                score = 1;
+            }
+
+            // Score 2 Weak
+            if (Regex.IsMatch(password, "[a-z]"))
+            {
+                score++;
+            }
+
+            // Score 3 Medium
+            if (Regex.IsMatch(password, "[A-Z]"))
+            {
+                score++;
+            }
+
+            // Score 4 Strong
+            if (Regex.IsMatch(password, "[0-9]"))
+            {
+                score++;
+            }
+
+            // Score 5 Excellent
+            if (Regex.IsMatch(password, "[^A-Za-z0-9]"))
+            {
+                score++;
+            }
+
+            return score;
         }
         protected byte[] encryptData(string data)
         {

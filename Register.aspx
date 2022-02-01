@@ -43,29 +43,32 @@
                 <label class="col-sm-2 col-form-label">First Name</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="text" class="form-control" ID="tb_fname" placeholder="First Name"></asp:TextBox>
-                    <span class="text-danger"></span>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ErrorMessage="Enter your first name" ControlToValidate="tb_fname" ForeColor="Red"></asp:RequiredFieldValidator>
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Last Name</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="text" class="form-control" ID="tb_lname" placeholder="Last Name"></asp:TextBox>
-                    <span class="text-danger"></span>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Enter your last name" ControlToValidate="tb_lname" ForeColor="Red"></asp:RequiredFieldValidator>
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Email Address</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="text" class="form-control" ID="tb_email" placeholder="Email Address"></asp:TextBox>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ErrorMessage="Enter your email address" ControlToValidate="tb_email" ForeColor="Red"></asp:RequiredFieldValidator>                
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Password</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="password" class="form-control" ID="tb_password" placeholder="Password"></asp:TextBox>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" ErrorMessage="Enter a password" ControlToValidate="tb_password" ForeColor="Red"></asp:RequiredFieldValidator>
                     <span class="show-pass" onclick="toggle()">
                         <i class="far fa-eye" onclick="myFunction(this)"></i>
                     </span>
+                    <!-- Password Complexity-->
                     <div id="popover-password">
                     <p><span id="result"></span></p>
                     <div class="progress">
@@ -111,7 +114,7 @@
                 <label class="col-sm-2 col-form-label">Date of Birth</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="date" class="form-control" ID="tb_dob" placeholder="Date of Birth"></asp:TextBox>
-                    <span class="text-danger"></span>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator5" runat="server" ErrorMessage="Enter your date of birth" ControlToValidate="tb_dob" ForeColor="Red"></asp:RequiredFieldValidator>                   
                 </div>
             </div>
             <hr />
@@ -119,15 +122,15 @@
                     <label class="col-sm-2 col-form-label">Card Information</label>
                     <div class="col-5">
                         <asp:TextBox runat="server" type="text" class="form-control" ID="tb_cardnum" placeholder="Card Number"></asp:TextBox>
-                        <span class="text-danger"></span>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator6" runat="server" ErrorMessage="Enter your card number" ControlToValidate="tb_cardnum" ForeColor="Red"></asp:RequiredFieldValidator>
                     </div>
                     <div class="col">
                         <asp:TextBox runat="server" type="text" class="form-control" ID="tb_cardexp" placeholder="Expiry Date"></asp:TextBox>
-                        <span class="text-danger"></span>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" ErrorMessage="Enter your card expiry date" ControlToValidate="tb_cardexp" ForeColor="Red"></asp:RequiredFieldValidator>
                     </div>
                     <div class="col">
                         <asp:TextBox runat="server" type="text" class="form-control" ID="tb_cardcvv" placeholder="CVV"></asp:TextBox>
-                        <span class="text-danger"></span>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator8" runat="server" ErrorMessage="Enter your card CVV" ControlToValidate="tb_cardcvv" ForeColor="Red"></asp:RequiredFieldValidator>
                     </div>
                 </div>
             <div> 

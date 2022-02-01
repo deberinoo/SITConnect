@@ -36,10 +36,8 @@ namespace SITConnect
                     }
                     else
                     {
-                        Console.WriteLine(userHash);
-                        Console.WriteLine(dbHash);
-                        errorMsg.Text = "Userid or password is not valid. Please try again.";
-                        Response.Redirect("Registration.aspx", false);
+                        errorMsg.ErrorMessage = "Userid or password is not valid. Please try again.";
+                        Response.Redirect("Login.aspx", false);
                     }
                 }
             } catch (Exception ex)
