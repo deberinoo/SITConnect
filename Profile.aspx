@@ -1,4 +1,4 @@
-﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Home.aspx.cs" Inherits="SITConnect.Homepage" %>
+﻿<%@ Page Language="C#" AutoEventWireup="true" CodeBehind="Profile.aspx.cs" Inherits="SITConnect.Success" %>
 
 <!DOCTYPE html>
 
@@ -16,21 +16,21 @@
             <div class="collapse navbar-collapse" id="navbarSupportedContent">
                 <ul class="navbar-nav ms-auto mb-2 mb-lg-0">
                     <li class="nav-item"><a class="nav-link active" href="Home.aspx">Home</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="Profile.aspx" id="profileBtn" runat="server">Profile</a></li>
-                    <li class="nav-item"><a class="nav-link active" href="Login.aspx" id="loginBtn" runat="server">Login</a></li>
-                    <li class="nav-item"><a class="nav-link" href="Register.aspx" id="registerBtn" runat="server">Register</a></li>
                 </ul>
             </div>
         </div>
     </nav>
     <!-- Page content-->
-    <div class="container">
-        <div class="text-center mt-5">
-            <h1>SITConnect</h1>
-            <p class="lead">Your most trusted stationary store</p>
-            <p>Designed by Deborah Lu</p>
+    <form id="form1" runat="server">
+        <div class="container">
+            <div class="text-center mt-5">
+                <h1>A Bootstrap 5 Starter Template</h1>
+                <p class="lead">A complete project boilerplate built with Bootstrap</p>
+                <p>Bootstrap v5.1.3</p>
+                <asp:Button ID="btnLogout" class="btn btn-primary" runat="server" Text="Logout" OnClick="Logout" />
+            </div>
         </div>
-    </div>
+    </form>
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>

@@ -18,15 +18,6 @@
                     <li class="nav-item"><a class="nav-link" href="Home.aspx">Home</a></li>
                     <li class="nav-item"><a class="nav-link active" href="Login.aspx">Login</a></li>
                     <li class="nav-item"><a class="nav-link" href="Register.aspx">Register</a></li>
-                    <li class="nav-item dropdown">
-                        <a class="nav-link dropdown-toggle" id="navbarDropdown" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">Dropdown</a>
-                        <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
-                            <li><a class="dropdown-item" href="#">Action</a></li>
-                            <li><a class="dropdown-item" href="#">Another action</a></li>
-                            <li><hr class="dropdown-divider" /></li>
-                            <li><a class="dropdown-item" href="#">Something else here</a></li>
-                        </ul>
-                    </li>
                 </ul>
             </div>
         </div>
@@ -39,7 +30,7 @@
         </div>
         <form id="form1" runat="server">
             <div class="form-group row">
-                <asp:CustomValidator ID="errorMsg" runat="server"></asp:CustomValidator>
+                <asp:Label ID="errorMsg" runat="server"></asp:Label>
                 <label class="col-sm-2 col-form-label">User ID/Email</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="text" class="form-control" ID="tb_userid" placeholder="User ID/Email"></asp:TextBox>
@@ -51,7 +42,7 @@
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="password" class="form-control" ID="tb_password" placeholder="Password"></asp:TextBox>
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Enter your password" ControlToValidate="tb_password" ForeColor="Red"></asp:RequiredFieldValidator>
-                </div>
+                    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>                    <asp:Label ID="lblMessage" runat="server" EnableViewState="false">Error message</asp:Label>                </div>
             </div>
             <div class="form-group row">
                 <asp:Button ID="btn_login" runat="server" class="btn btn-primary btn-block" Text="Login" OnClick="btn_Login_Click" />
@@ -60,5 +51,14 @@
     </div>
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Google Captcha API-->
+    <script src="https://www.google.com/recaptcha/api.js?render=6LfWMyUeAAAAAKhiHH71ybVEEGhUnI2SmVB1yZMg"></script>
+    <script>
+         grecaptcha.ready(function () {
+             grecaptcha.execute('6LfWMyUeAAAAAKhiHH71ybVEEGhUnI2SmVB1yZMg', { action: 'Login' }).then(function (token) {
+            document.getElementById("g-recaptcha-response").value = token;
+            });
+         });
+    </script>
 </body>
 </html>
