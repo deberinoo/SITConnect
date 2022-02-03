@@ -39,7 +39,6 @@ namespace SITConnect
                     using (StreamReader readStream = new StreamReader(wResponse.GetResponseStream()))
                     {
                         string jsonResponse = readStream.ReadToEnd();
-                        lblMessage.Text = jsonResponse.ToString();
                         JavaScriptSerializer js = new JavaScriptSerializer();
                         MyObject jsonObject = js.Deserialize<MyObject>(jsonResponse);
                         result = Convert.ToBoolean(jsonObject.success);

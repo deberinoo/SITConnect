@@ -29,8 +29,10 @@
             <p class="lead">Sign into your account</p>
         </div>
         <form id="form1" runat="server">
-            <div class="form-group row">
+            <div class="mb-3">
                 <asp:Label ID="errorMsg" runat="server"></asp:Label>
+            </div>
+            <div class="form-group row">
                 <label class="col-sm-2 col-form-label">User ID/Email</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="text" class="form-control" ID="tb_userid" placeholder="User ID/Email"></asp:TextBox>
@@ -42,7 +44,8 @@
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="password" class="form-control" ID="tb_password" placeholder="Password"></asp:TextBox>
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Enter your password" ControlToValidate="tb_password" ForeColor="Red"></asp:RequiredFieldValidator>
-                    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>                    <asp:Label ID="lblMessage" runat="server" EnableViewState="false">Error message</asp:Label>                </div>
+                    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
+                </div>
             </div>
             <div class="form-group row">
                 <asp:Button ID="btn_login" runat="server" class="btn btn-primary btn-block" Text="Login" OnClick="btn_Login_Click" />

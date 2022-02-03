@@ -12,8 +12,8 @@ namespace SITConnect
         string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["MYDBConnection"].ConnectionString;
         static string finalHash;
         static string salt;
-        byte[] Key;
         byte[] IV;
+        byte[] Key;
         protected void Page_Load(object sender, EventArgs e)
         {
 
@@ -43,6 +43,7 @@ namespace SITConnect
             Key = cipher.Key;
             IV = cipher.IV;
             createAccount();
+            Response.Redirect("Login.aspx", false);
         }
         protected void createAccount()
         {
@@ -50,7 +51,7 @@ namespace SITConnect
             {
                 using (SqlConnection con = new SqlConnection(MYDBConnectionString))
                 {
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Users VALUES(@FirstName,@LastName,@Email,@PasswordHash,@PasswordSalt,@BirthDate,@Image,@CardNumber,@CardExpiry,@CardCVV)"))
+                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Users VALUES(@FirstName,@LastName,@Email,@PasswordHash,@PasswordSalt,@BirthDate,@Image,@CardNumber,@CardExpiry,@CardCVV,@IV,@Key )"))
                     {
                         using (SqlDataAdapter sda = new SqlDataAdapter())
                         {
@@ -62,10 +63,12 @@ namespace SITConnect
                             cmd.Parameters.AddWithValue("@PasswordSalt",   salt);
                             cmd.Parameters.AddWithValue("@BirthDate",  tb_dob.Text.Trim());
                             cmd.Parameters.AddWithValue("@Image",      DBNull.Value);
-                            cmd.Parameters.AddWithValue("@CardNumber", tb_cardnum.Text.Trim());
-                            cmd.Parameters.AddWithValue("@CardExpiry", tb_cardexp.Text.Trim());
-                            cmd.Parameters.AddWithValue("@CardCVV",    tb_cardcvv.Text.Trim());
-                            
+                            cmd.Parameters.AddWithValue("@CardNumber", encryptData(tb_cardnum.Text.Trim()));
+                            cmd.Parameters.AddWithValue("@CardExpiry", encryptData(tb_cardexp.Text.Trim()));
+                            cmd.Parameters.AddWithValue("@CardCVV",    encryptData(tb_cardcvv.Text.Trim()));
+                            cmd.Parameters.AddWithValue("@IV",         Convert.ToBase64String(IV));
+                            cmd.Parameters.AddWithValue("@Key",        Convert.ToBase64String(Key));
+
                             cmd.Connection = con;
                             con.Open();
                             cmd.ExecuteNonQuery();
@@ -77,46 +80,6 @@ namespace SITConnect
             {
                 throw new Exception(ex.ToString());
             }
-        }
-        private int checkPassword(string password)
-        {
-            int score = 0;
-
-            // if length of password is less than 8 chars
-            if (password.Length < 8)
-            {
-                return 1;
-            }
-            else
-            {
-                score = 1;
-            }
-
-            // Score 2 Weak
-            if (Regex.IsMatch(password, "[a-z]"))
-            {
-                score++;
-            }
-
-            // Score 3 Medium
-            if (Regex.IsMatch(password, "[A-Z]"))
-            {
-                score++;
-            }
-
-            // Score 4 Strong
-            if (Regex.IsMatch(password, "[0-9]"))
-            {
-                score++;
-            }
-
-            // Score 5 Excellent
-            if (Regex.IsMatch(password, "[^A-Za-z0-9]"))
-            {
-                score++;
-            }
-
-            return score;
         }
         protected byte[] encryptData(string data)
         {

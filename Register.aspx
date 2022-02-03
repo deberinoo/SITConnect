@@ -24,8 +24,8 @@
         </div>
     </nav>
     <!-- Page content-->
-    <div class="container">
-         <div class="text-center mt-5">
+    <div class="container"> 
+         <div class="text-center mt-5 mb-3">
             <h1>Welcome to SITConnect!</h1>
             <h3 class="lead">Create your account</h3>
         </div>
@@ -48,14 +48,18 @@
                 <label class="col-sm-2 col-form-label">Email Address</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="text" class="form-control" ID="tb_email" placeholder="Email Address"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ErrorMessage="Enter your email address" ControlToValidate="tb_email" ForeColor="Red"></asp:RequiredFieldValidator>                
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ErrorMessage="Enter your email address" ControlToValidate="tb_email" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>                
+                    <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" ErrorMessage="Enter a valid email address" ForeColor="Red" Display="Dynamic" EnableClientScript="False"
+                        ControlToValidate="tb_email" ValidationExpression="^[^@\s]+@[^@\s]+\.[^@\s]+$"></asp:RegularExpressionValidator>
                 </div>
             </div>
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Password</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="password" class="form-control" ID="tb_password" placeholder="Password"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" ErrorMessage="Enter a password" ControlToValidate="tb_password" ForeColor="Red"></asp:RequiredFieldValidator>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" ErrorMessage="Enter a password" ControlToValidate="tb_password" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
+                    <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ErrorMessage="Enter a password that fulfils all the requirements" ForeColor="Red" Display="Dynamic" EnableClientScript="False"
+                        ControlToValidate="tb_email" ValidationExpression="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$"></asp:RegularExpressionValidator>
                     <span class="show-pass" onclick="toggle()">
                         <i class="far fa-eye" onclick="myFunction(this)"></i>
                     </span>
@@ -113,18 +117,24 @@
                     <label class="col-sm-2 col-form-label">Card Information</label>
                     <div class="col-5">
                         <asp:TextBox runat="server" type="text" class="form-control" ID="tb_cardnum" placeholder="Card Number"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="RequiredFieldValidator6" runat="server" ErrorMessage="Enter your card number" ControlToValidate="tb_cardnum" ForeColor="Red"></asp:RequiredFieldValidator>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator6" runat="server" ErrorMessage="Enter your card number" ControlToValidate="tb_cardnum" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator3" runat="server" ErrorMessage="Enter a valid card number" ForeColor="Red" Display="Dynamic" EnableClientScript="false"
+                            ControlToValidate="tb_email" ValidationExpression="^4[0-9]{12}(?:[0-9]{3})?$">
+                        </asp:RegularExpressionValidator>
                     </div>
                     <div class="col">
-                        <asp:TextBox runat="server" type="text" class="form-control" ID="tb_cardexp" placeholder="Expiry Date"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" ErrorMessage="Enter your card expiry date" ControlToValidate="tb_cardexp" ForeColor="Red"></asp:RequiredFieldValidator>
+                        <asp:TextBox runat="server" type="text" class="form-control" ID="tb_cardexp" placeholder="Expiry Date (MMYY)"></asp:TextBox>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" ErrorMessage="Enter your card expiry date" ControlToValidate="tb_cardexp" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator4" runat="server" ErrorMessage="Enter a valid card expiry date" ForeColor="Red" Display="Dynamic" EnableClientScript="false"
+                            ControlToValidate="tb_email" ValidationExpression="\d{4}"></asp:RegularExpressionValidator>
                     </div>
                     <div class="col">
                         <asp:TextBox runat="server" type="text" class="form-control" ID="tb_cardcvv" placeholder="CVV"></asp:TextBox>
-                        <asp:RequiredFieldValidator ID="RequiredFieldValidator8" runat="server" ErrorMessage="Enter your card CVV" ControlToValidate="tb_cardcvv" ForeColor="Red"></asp:RequiredFieldValidator>
+                        <asp:RequiredFieldValidator ID="RequiredFieldValidator8" runat="server" ErrorMessage="Enter your card CVV" ControlToValidate="tb_cardcvv" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator5" runat="server" ErrorMessage="Enter a valid card number" ForeColor="Red" Display="Dynamic" EnableClientScript="false"
+                            ControlToValidate="tb_email" ValidationExpression="\d{3}"></asp:RegularExpressionValidator>
                     </div>
-                </div>
-            <div> 
+            </div>
             <input type="hidden" id="g-recaptcha-reponse" name="g-recaptcha-response" />
             <div class="form-group row">
                 <asp:Button ID="Button1" runat="server" class="btn btn-primary btn-block" Text="Submit" OnClick="btn_Submit_Click" />

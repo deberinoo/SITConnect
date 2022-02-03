@@ -11,7 +11,7 @@ namespace SITConnect
 {
 
 
-    public partial class Success
+    public partial class Profile
     {
 
         /// <summary>
