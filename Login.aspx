@@ -43,8 +43,11 @@
                 <label class="col-sm-2 col-form-label">Password</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="password" class="form-control" ID="tb_password" placeholder="Password"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Enter your password" ControlToValidate="tb_password" ForeColor="Red"></asp:RequiredFieldValidator>
-                    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Enter your password" ControlToValidate="tb_password" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
+                    <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/><br />
+                </div>
+                <div class="col-sm-10">
+                    <a href="ChangePassword.aspx">Change password</a>
                 </div>
             </div>
             <div class="form-group row">

@@ -1,15 +1,12 @@
 ﻿using System;
 using System.Security.Cryptography;
-using System.Text;
-using System.Data;
-using System.Data.SqlClient;
-using System.Text.RegularExpressions;
+using SITConnect.Models;
+using SITConnect.Services;
 
 namespace SITConnect
 {
     public partial class Registration : System.Web.UI.Page
     {
-        string MYDBConnectionString = System.Configuration.ConfigurationManager.ConnectionStrings["MYDBConnection"].ConnectionString;
         static string finalHash;
         static string salt;
         byte[] IV;
@@ -22,81 +19,37 @@ namespace SITConnect
         {
             string pwd = tb_password.Text.ToString().Trim();
 
-            //Generate random "salt"
-            RNGCryptoServiceProvider rng = new RNGCryptoServiceProvider();
-            byte[] saltByte = new byte[8];
-
-            //Fills array of bytes with a cryptographically strong sequence of random values.
-            rng.GetBytes(saltByte);
-            salt = Convert.ToBase64String(saltByte);
-
-            SHA512Managed hashing = new SHA512Managed();
-
-            string pwdWithSalt = pwd + salt;
-            byte[] plainHash = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwd));
-            byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
-            
-            finalHash = Convert.ToBase64String(hashWithSalt);
+            (finalHash, salt) = Security.HashPassword(pwd);
             
             RijndaelManaged cipher = new RijndaelManaged();
             cipher.GenerateKey();
             Key = cipher.Key;
             IV = cipher.IV;
+
             createAccount();
-            Response.Redirect("Login.aspx", false);
         }
         protected void createAccount()
         {
-            try
-            {
-                using (SqlConnection con = new SqlConnection(MYDBConnectionString))
-                {
-                    using (SqlCommand cmd = new SqlCommand("INSERT INTO Users VALUES(@FirstName,@LastName,@Email,@PasswordHash,@PasswordSalt,@BirthDate,@Image,@CardNumber,@CardExpiry,@CardCVV,@IV,@Key )"))
-                    {
-                        using (SqlDataAdapter sda = new SqlDataAdapter())
-                        {
-                            cmd.CommandType = CommandType.Text;
-                            cmd.Parameters.AddWithValue("@FirstName",  tb_fname.Text.Trim());
-                            cmd.Parameters.AddWithValue("@LastName",   tb_lname.Text.Trim());
-                            cmd.Parameters.AddWithValue("@Email",      tb_email.Text.Trim());
-                            cmd.Parameters.AddWithValue("@PasswordHash",   finalHash);
-                            cmd.Parameters.AddWithValue("@PasswordSalt",   salt);
-                            cmd.Parameters.AddWithValue("@BirthDate",  tb_dob.Text.Trim());
-                            cmd.Parameters.AddWithValue("@Image",      DBNull.Value);
-                            cmd.Parameters.AddWithValue("@CardNumber", encryptData(tb_cardnum.Text.Trim()));
-                            cmd.Parameters.AddWithValue("@CardExpiry", encryptData(tb_cardexp.Text.Trim()));
-                            cmd.Parameters.AddWithValue("@CardCVV",    encryptData(tb_cardcvv.Text.Trim()));
-                            cmd.Parameters.AddWithValue("@IV",         Convert.ToBase64String(IV));
-                            cmd.Parameters.AddWithValue("@Key",        Convert.ToBase64String(Key));
+            User user = new User();
+            user.Id                  = Security.GenerateRandomNumber();
+            user.FirstName           = tb_fname.Text.Trim();
+            user.LastName            = tb_fname.Text.Trim();
+            user.Email               = tb_email.Text.Trim();
+            user.PasswordHash        = finalHash;
+            user.PasswordSalt        = salt;
+            user.BirthDate           = tb_dob.Text.Trim();
+            user.Image               = DBNull.Value.ToString();
+            user.CardNumber          = Security.Encrypt(tb_cardnum.Text.Trim(), Key, IV);
+            user.CardExpiry          = Security.Encrypt(tb_cardexp.Text.Trim(), Key, IV);
+            user.CardCVV             = Security.Encrypt(tb_cardcvv.Text.Trim(), Key, IV);
+            user.Key                 = Key;
+            user.IV                  = IV;
+            user.FailedLoginAttempts = 0;
+            user.IsLocked            = false;
+            user.LockedDateTime      = DBNull.Value.ToString();
 
-                            cmd.Connection = con;
-                            con.Open();
-                            cmd.ExecuteNonQuery();
-                            con.Close();
-                        }
-                    }
-                }
-            } catch (Exception ex)
-            {
-                throw new Exception(ex.ToString());
-            }
-        }
-        protected byte[] encryptData(string data)
-        {
-            byte[] cipherText = null;
-            try
-            {
-                RijndaelManaged cipher = new RijndaelManaged();
-                cipher.IV = IV;
-                cipher.Key = Key;
-                ICryptoTransform encryptTransform = cipher.CreateEncryptor();
-                byte[] plainText = Encoding.UTF8.GetBytes(data);
-                cipherText = encryptTransform.TransformFinalBlock(plainText, 0, plainText.Length);
-            } catch (Exception ex)
-            {
-                throw new Exception(ex.ToString());
-            } finally { }
-            return cipherText;
+            user.CreateUser(user);
+            Response.Redirect("Login.aspx", false);
         }
     }
 }
