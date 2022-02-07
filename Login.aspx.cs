@@ -16,7 +16,6 @@ namespace SITConnect
     }
     public partial class Login : System.Web.UI.Page
     {
-        public User user;
         protected void Page_Load(object sender, EventArgs e)
         {
         }
@@ -49,6 +48,8 @@ namespace SITConnect
         }
         protected void btn_Login_Click(object sender, EventArgs e)
         {
+            var user = new User();
+
             if (ValidateCaptcha())
             {
                 string pwd = tb_password.Text.ToString().Trim();
@@ -81,7 +82,7 @@ namespace SITConnect
                 else
                 {
                     // if login fails
-
+                    errorMsg.Text = "Userid or password is not valid. Please try again.";
                 }
             }
         }

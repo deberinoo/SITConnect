@@ -80,11 +80,11 @@
   <ItemGroup>
     <Content Include="ChangePassword.aspx" />
     <Content Include="ErrorPages\404.aspx" />
-    <Content Include="ErrorPages\Oops.aspx" />
     <Content Include="App_Data\UsersDB.mdf" />
     <Content Include="App_Data\UsersDB_log.ldf">
       <DependentUpon>UsersDB.mdf</DependentUpon>
     </Content>
+    <Content Include="ErrorPages\Oops.aspx" />
     <Content Include="Global.asax" />
     <Content Include="Home.aspx" />
     <Content Include="Login.aspx" />

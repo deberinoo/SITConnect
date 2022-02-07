@@ -30,7 +30,7 @@
         </div>
         <form id="form1" runat="server">
             <div class="mb-3">
-                <asp:Label ID="errorMsg" runat="server"></asp:Label>
+                <asp:Label ID="errorMsg" runat="server" CssClass="text-danger"></asp:Label>
             </div>
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">User ID/Email</label>
