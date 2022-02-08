@@ -29,7 +29,7 @@
         </div>
         <form id="form1" runat="server">
             <div class="mb-3">
-                <asp:Label ID="errorMsg" runat="server"></asp:Label>
+                <asp:Label ID="errorMsg" runat="server" ForeColor="Red"></asp:Label>
             </div>
             <div class="form-group row">
                 <label class="col-sm-2 col-form-label">Current password</label>
@@ -53,7 +53,7 @@
                 </div>
             </div>
             <div class="form-group row">
-                <asp:Button ID="btn_update" runat="server" class="btn btn-primary btn-block" Text="Change password" />
+                <asp:Button ID="btn_update" runat="server" class="btn btn-primary btn-block" Text="Change password" OnClick="btn_update_Click" />
             </div>
         </form>
     </div>

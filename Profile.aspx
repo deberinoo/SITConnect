@@ -26,8 +26,8 @@
             <div class="text-center mt-5">
                 <h1>A Bootstrap 5 Starter Template</h1>
                 <p class="lead">A complete project boilerplate built with Bootstrap</p>
-                <p>Bootstrap v5.1.3</p>
-                <asp:Button ID="btnLogout" class="btn btn-primary" runat="server" Text="Logout" OnClick="Logout" />
+                <asp:Button ID="btnLogout" class="btn btn-primary" runat="server" Text="Logout" OnClick="Logout" /><br />
+                <a href="ChangePassword.aspx">Change Password</a>
             </div>
         </div>
     </form>

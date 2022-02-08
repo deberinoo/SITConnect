@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SITConnect.Services;
+using System;
 using System.Data;
 using System.Data.SqlClient;
 using System.Security.Cryptography;
@@ -332,6 +333,67 @@ namespace SITConnect.Models
             }
             finally { connection.Close(); }
             return salt;
+        }
+        public string GetPasswordHash(string email)
+        {
+            string hash = null;
+
+            SqlConnection connection = new SqlConnection(connectionString);
+            string sql = "select PasswordHash FROM Users WHERE Email=@EMAIL";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@EMAIL", email);
+
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["PasswordHash"] != null)
+                        {
+                            if (reader["PasswordHash"] != DBNull.Value)
+                            {
+                                hash = reader["PasswordHash"].ToString();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return hash;
+        }
+        public bool ChangePassword(string email, string password)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("UPDATE Users SET PasswordHash = @PasswordHash, PasswordSalt = @PasswordSalt WHERE Email = @EMAIL"))
+                {
+                    using (SqlDataAdapter sda = new SqlDataAdapter())
+                    {
+                        string finalHash;
+                        string salt;
+
+                        // Hash new password
+                        (finalHash, salt) = Security.HashPassword(password);
+
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@Email", email);
+                        cmd.Parameters.AddWithValue("@PasswordHash", finalHash);
+                        cmd.Parameters.AddWithValue("@PasswordSalt", salt);
+
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+            }
+            return true;
         }
     }
 }
