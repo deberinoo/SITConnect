@@ -178,12 +178,13 @@ namespace SITConnect.Models
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("UPDATE Users SET FailedLoginAttempts = @FailedLoginAttempts WHERE Email = @EMAIL"))
+                using (SqlCommand cmd = new SqlCommand("UPDATE Users SET IsLocked = @IsLocked, FailedLoginAttempts = @FailedLoginAttempts WHERE Email = @EMAIL"))
                 {
                     using (SqlDataAdapter sda = new SqlDataAdapter())
                     {
                         cmd.CommandType = CommandType.Text;
                         cmd.Parameters.AddWithValue("@Email", email);
+                        cmd.Parameters.AddWithValue("@IsLocked", false);
                         cmd.Parameters.AddWithValue("@FailedLoginAttempts", 0);
 
                         cmd.Connection = con;
