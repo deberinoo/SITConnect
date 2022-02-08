@@ -33,10 +33,10 @@
                 <asp:Label ID="errorMsg" runat="server" CssClass="text-danger"></asp:Label>
             </div>
             <div class="form-group row">
-                <label class="col-sm-2 col-form-label">User ID/Email</label>
+                <label class="col-sm-2 col-form-label">Email</label>
                 <div class="col-sm-10">
-                    <asp:TextBox runat="server" type="text" class="form-control" ID="tb_userid" placeholder="User ID/Email"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ErrorMessage="Enter your user id or email" ControlToValidate="tb_userid" ForeColor="Red"></asp:RequiredFieldValidator>                    
+                    <asp:TextBox runat="server" type="text" class="form-control" ID="tb_email" placeholder="Email"></asp:TextBox>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator1" runat="server" ErrorMessage="Enter your user id or email" ControlToValidate="tb_email" ForeColor="Red"></asp:RequiredFieldValidator>                    
                 </div>
             </div>
                 <div class="form-group row">

@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Security.Cryptography;
-using System.Text;
 using System.Collections.Generic;
 using System.Net;
 using System.IO;
@@ -9,13 +7,12 @@ using SITConnect.Models;
 
 namespace SITConnect
 {
-    public class MyObject
+    public partial class Login : System.Web.UI.Page
     {
         public string success { get; set; }
         public List<string> ErrorMessage { get; set; }
-    }
-    public partial class Login : System.Web.UI.Page
-    {
+        int FailedLoginAttempts = 0;
+        DateTime StoredLockedDateTime;
         protected void Page_Load(object sender, EventArgs e)
         {
         }
@@ -36,7 +33,7 @@ namespace SITConnect
                     {
                         string jsonResponse = readStream.ReadToEnd();
                         JavaScriptSerializer js = new JavaScriptSerializer();
-                        MyObject jsonObject = js.Deserialize<MyObject>(jsonResponse);
+                        Login jsonObject = js.Deserialize<Login>(jsonResponse);
                         result = Convert.ToBoolean(jsonObject.success);
                     }
                 }
@@ -49,40 +46,55 @@ namespace SITConnect
         protected void btn_Login_Click(object sender, EventArgs e)
         {
             var user = new User();
+            string password = tb_password.Text.ToString().Trim();
+            string email = tb_email.Text.ToString().Trim();
+            StoredLockedDateTime = Convert.ToDateTime(user.GetLockedOutTime(email));
 
             if (ValidateCaptcha())
             {
-                string pwd = tb_password.Text.ToString().Trim();
-                string userid = tb_userid.Text.ToString().Trim();
+                // Check time difference between time now and stored locked date time
+                TimeSpan timespan = (DateTime.Now).Subtract(StoredLockedDateTime);
+                Int32 minutesLocked = Convert.ToInt32(timespan.TotalMinutes);
+                Int32 pendingMinutes = 15 - minutesLocked;
 
-                SHA512Managed hashing = new SHA512Managed();
-                string dbHash = user.getDBHash(userid);
-                string dbSalt = user.getDBSalt(userid);
-
-                if (dbSalt != null && dbSalt.Length > 0 && dbHash != null && dbHash.Length > 0)
+                // If timer has not reached 0 yet, throw error message
+                if (pendingMinutes > 0)
                 {
-                    string pwdWithSalt = pwd + dbSalt;
-                    byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(pwdWithSalt));
-                    string userHash = Convert.ToBase64String(hashWithSalt);
-                    if (userHash.Equals(dbHash))
+                    errorMsg.Text = "Your account is still locked. Please try again later.";
+                }
+                // Else, check if the password is correct
+                // If incorrect, increment failed login attempts
+                else
+                {
+                    if (user.CheckPassword(email, password))
                     {
                         // Create session
-                        Session["LoggedIn"] = userid;
+                        Session["LoggedIn"] = email;
                         string guid = Guid.NewGuid().ToString();
                         Session["AuthToken"] = guid;
                         Response.Cookies.Add(new System.Web.HttpCookie("AuthToken", guid));
-
                         Response.Redirect("Profile.aspx", false);
+                        user.ResetFailedLoginAttempts(email);
                     }
                     else
                     {
-                        errorMsg.Text = "Userid or password is not valid. Please try again.";
+                        FailedLoginAttempts = user.GetFailedLoginAttempts(email);
+                        FailedLoginAttempts++;
+                        user.UpdateFailedLoginAttempts(email, FailedLoginAttempts);
+                        if (FailedLoginAttempts == 1)
+                        {
+                            errorMsg.Text = "Email or password is not valid. 2 login attempts remaining.";
+                        }
+                        else if (FailedLoginAttempts == 2)
+                        {
+                            errorMsg.Text = "Email or password is not valid. 1 login attempt remaining";
+                        }
+                        else if (FailedLoginAttempts >= 3)
+                        {
+                            errorMsg.Text = "Your account has been locked. Please try again later.";
+                            user.LockOutUser(email);
+                        }
                     }
-                }
-                else
-                {
-                    // if login fails
-                    errorMsg.Text = "Userid or password is not valid. Please try again.";
                 }
             }
         }

@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Data;
 using System.Data.SqlClient;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace SITConnect.Models
 {
@@ -13,7 +16,7 @@ namespace SITConnect.Models
         public string PasswordHash { get; set; }
         public string PasswordSalt { get; set; }
         public string BirthDate { get; set; }
-        public string Image { get; set; }
+        public byte[] Image { get; set; }
         public string CardNumber { get; set; }
         public string CardExpiry { get; set; }
         public string CardCVV { get; set; }
@@ -22,6 +25,8 @@ namespace SITConnect.Models
         public int FailedLoginAttempts { get; set; }
         public bool IsLocked { get; set; }
         public string LockedDateTime { get; set; }
+
+
         public bool CreateUser(User user)
         {
             using (SqlConnection con = new SqlConnection(connectionString))
@@ -56,14 +61,219 @@ namespace SITConnect.Models
             }
             return true;
         }
-        public string getDBHash(string userid)
+        public bool CheckAccountExists(string email)
         {
-            string h = null;
+            SqlConnection connection = new SqlConnection(connectionString);
+            string sql = "select * FROM Users WHERE Email=@EMAIL";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@EMAIL", email);
+
+            connection.Open();
+            using (SqlDataReader reader = command.ExecuteReader())
+            {
+                while (reader.Read())
+                {
+                    if (reader["Id"].ToString() != null)
+                    {
+                        return true;
+                    }
+                }
+            }
+            connection.Close();
+            return false;
+        }
+        public User GetUserByEmail(string email)
+        {
+            User user = null;
 
             SqlConnection connection = new SqlConnection(connectionString);
-            string sql = "select PasswordHash FROM Users WHERE Email=@USERID";
+            string sql = "select * FROM Users WHERE Email=@EMAIL";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@USERID", userid);
+            command.Parameters.AddWithValue("@EMAIL", email);
+
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        user.Id                  = Convert.ToInt32(reader["Id"].ToString());
+                        user.FirstName           = reader["FirstName"].ToString();
+                        user.LastName            = reader["LastName"].ToString();
+                        user.Email               = reader["Email"].ToString();
+                        user.PasswordHash        = reader["PasswordHash"].ToString();
+                        user.PasswordSalt        = reader["PasswordSalt"].ToString();
+                        user.BirthDate           = reader["BirthDate"].ToString();
+                        user.Image               = Encoding.ASCII.GetBytes(reader["Image"].ToString());
+                        user.CardNumber          = reader["CardNumber"].ToString();
+                        user.CardExpiry          = reader["CardExpiry"].ToString();
+                        user.CardCVV             = reader["CardCVV"].ToString();
+                        user.Key                 = Encoding.ASCII.GetBytes(reader["Key"].ToString());
+                        user.IV                  = Encoding.ASCII.GetBytes(reader["IV"].ToString());
+                        user.FailedLoginAttempts = Convert.ToInt32(reader["FailedLoginAttempts"].ToString());
+                        user.IsLocked            = Convert.ToBoolean(reader["IsLocked"].ToString());
+                        user.LockedDateTime      = reader["LockedDateTime"].ToString();
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return user;
+        }
+        public bool CheckPassword(string email, string enteredPassword)
+        {
+            SHA512Managed hashing = new SHA512Managed();
+            string storedHash = GetDBHash(email);
+            string storedSalt = GetDBSalt(email);
+
+            if (storedHash != null && storedSalt.Length > 0 && storedHash != null && storedHash.Length > 0)
+            {
+                string passwordSalt = enteredPassword + storedSalt;
+                byte[] hashSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(passwordSalt));
+                string userHash = Convert.ToBase64String(hashSalt);
+
+                if (userHash.Equals(storedHash)) 
+                {
+                    return true;
+                }
+                return false;
+            }
+            return false;
+        }
+        public int GetFailedLoginAttempts(string email)
+        {
+            int attempts = 0;
+
+            SqlConnection connection = new SqlConnection(connectionString);
+            string sql = "select FailedLoginAttempts FROM Users WHERE Email=@EMAIL";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@EMAIL", email);
+
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["FailedLoginAttempts"] != null)
+                        {
+                            attempts = Convert.ToInt32(reader["FailedLoginAttempts"].ToString());
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return attempts;
+        }
+        public bool ResetFailedLoginAttempts(string email)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("UPDATE Users SET FailedLoginAttempts = @FailedLoginAttempts WHERE Email = @EMAIL"))
+                {
+                    using (SqlDataAdapter sda = new SqlDataAdapter())
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@Email", email);
+                        cmd.Parameters.AddWithValue("@FailedLoginAttempts", 0);
+
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+            }
+            return true;
+        }
+        public bool UpdateFailedLoginAttempts(string email, int loginAttempt)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("UPDATE Users SET FailedLoginAttempts = @FailedLoginAttempts WHERE Email = @EMAIL"))
+                {
+                    using (SqlDataAdapter sda = new SqlDataAdapter())
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@Email", email);
+                        cmd.Parameters.AddWithValue("@FailedLoginAttempts", loginAttempt);
+
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+            }
+            return true;
+        }
+        public bool LockOutUser(string email)
+        {
+            using (SqlConnection con = new SqlConnection(connectionString))
+            {
+                using (SqlCommand cmd = new SqlCommand("UPDATE Users SET IsLocked = @IsLocked, LockedDateTime = @LockedDateTime WHERE Email = @EMAIL"))
+                {
+                    using (SqlDataAdapter sda = new SqlDataAdapter())
+                    {
+                        cmd.CommandType = CommandType.Text;
+                        cmd.Parameters.AddWithValue("@Email", email);
+                        cmd.Parameters.AddWithValue("@IsLocked", true);
+                        cmd.Parameters.AddWithValue("@LockedDateTime", DateTime.Now);
+
+                        cmd.Connection = con;
+                        con.Open();
+                        cmd.ExecuteNonQuery();
+                        con.Close();
+                    }
+                }
+            }
+            return true;
+        }
+        public string GetLockedOutTime(string email)
+        {
+            SqlConnection connection = new SqlConnection(connectionString);
+            string sql = "select LockedDateTime FROM Users WHERE Email=@EMAIL";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@EMAIL", email);
+
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["LockedDateTime"] != null)
+                        {
+                            LockedDateTime = reader["LockedDateTime"].ToString();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return LockedDateTime;
+        }
+        public string GetDBHash(string email)
+        {
+            string hash = null;
+
+            SqlConnection connection = new SqlConnection(connectionString);
+            string sql = "select PasswordHash FROM Users WHERE Email=@EMAIL";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@EMAIL", email);
 
             try
             {
@@ -76,7 +286,7 @@ namespace SITConnect.Models
                         {
                             if (reader["PasswordHash"] != DBNull.Value)
                             {
-                                h = reader["PasswordHash"].ToString();
+                                hash = reader["PasswordHash"].ToString();
                             }
                         }
                     }
@@ -87,16 +297,16 @@ namespace SITConnect.Models
                 throw new Exception(ex.ToString());
             }
             finally { connection.Close(); }
-            return h;
+            return hash;
         }
-        public string getDBSalt(string userid)
+        public string GetDBSalt(string email)
         {
-            string s = null;
+            string salt = null;
 
             SqlConnection connection = new SqlConnection(connectionString);
-            string sql = "select PasswordSalt FROM Users WHERE Email=@USERID";
+            string sql = "select PasswordSalt FROM Users WHERE Email=@EMAIL";
             SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@USERID", userid);
+            command.Parameters.AddWithValue("@EMAIL", email);
 
             try
             {
@@ -109,7 +319,7 @@ namespace SITConnect.Models
                         {
                             if (reader["PasswordSalt"] != DBNull.Value)
                             {
-                                s = reader["PasswordSalt"].ToString();
+                                salt = reader["PasswordSalt"].ToString();
                             }
                         }
                     }
@@ -120,7 +330,7 @@ namespace SITConnect.Models
                 throw new Exception(ex.ToString());
             }
             finally { connection.Close(); }
-            return s;
+            return salt;
         }
     }
 }
