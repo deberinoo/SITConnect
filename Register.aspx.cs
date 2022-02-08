@@ -24,6 +24,8 @@ namespace SITConnect
             string email = tb_email.Text.ToString().Trim();
 
             var user = new User();
+            var log = new AuditLog();
+
             if (user.CheckAccountExists(email))
             {
                 lbl_email.Text = "Email already exists";
@@ -38,6 +40,7 @@ namespace SITConnect
                 IV = cipher.IV;
 
                 createAccount();
+                log.LogUserInformation(email, "register");
             }
         }
         protected void createAccount()

@@ -1,4 +1,5 @@
 ﻿using System;
+using SITConnect.Models;
 
 namespace SITConnect
 {
@@ -20,6 +21,9 @@ namespace SITConnect
         }
         protected void Logout(object sender, EventArgs e)
         {
+            var log = new AuditLog();
+            log.LogUserInformation(Session["LoggedIn"].ToString(), "logout");
+
             Session.Clear();
             Session.Abandon();
             Session.RemoveAll();

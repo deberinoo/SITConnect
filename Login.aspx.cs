@@ -46,6 +46,8 @@ namespace SITConnect
         protected void btn_Login_Click(object sender, EventArgs e)
         {
             var user = new User();
+            var log = new AuditLog();
+
             string password = tb_password.Text.ToString().Trim();
             string email = tb_email.Text.ToString().Trim();
             StoredLockedDateTime = Convert.ToDateTime(user.GetLockedOutTime(email));
@@ -74,10 +76,13 @@ namespace SITConnect
                         Session["AuthToken"] = guid;
                         Response.Cookies.Add(new System.Web.HttpCookie("AuthToken", guid));
                         Response.Redirect("Profile.aspx", false);
+
                         user.ResetFailedLoginAttempts(email);
+                        log.LogUserInformation(email, "login");
                     }
                     else
                     {
+                        log.LogUserInformation(email, "fail");
                         FailedLoginAttempts = user.GetFailedLoginAttempts(email);
                         FailedLoginAttempts++;
                         user.UpdateFailedLoginAttempts(email, FailedLoginAttempts);
@@ -93,6 +98,7 @@ namespace SITConnect
                         {
                             errorMsg.Text = "Your account has been locked. Please try again later.";
                             user.LockOutUser(email);
+                            log.LogUserInformation(email, "lock");
                         }
                     }
                 }
