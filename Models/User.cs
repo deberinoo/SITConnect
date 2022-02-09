@@ -28,13 +28,14 @@ namespace SITConnect.Models
         public string LockedDateTime { get; set; }
         public string PasswordHistory1 { get; set; }
         public string PasswordHistory2 { get; set; }
+        public string PasswordChangeTime { get; set; }
 
 
         public bool CreateUser(User user)
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO Users VALUES(@Id,@FirstName,@LastName,@Email,@PasswordHash,@PasswordSalt,@BirthDate,@Image,@CardNumber,@CardExpiry,@CardCVV,@Key,@IV,@FailedLoginAttempts,@IsLocked,@LockedDateTime,@PasswordHistory1,@PasswordHistory2)"))
+                using (SqlCommand cmd = new SqlCommand("INSERT INTO Users VALUES(@Id,@FirstName,@LastName,@Email,@PasswordHash,@PasswordSalt,@BirthDate,@Image,@CardNumber,@CardExpiry,@CardCVV,@Key,@IV,@FailedLoginAttempts,@IsLocked,@LockedDateTime,@PasswordHistory1,@PasswordHistory2,@PasswordChangeTime)"))
                 {
                     using (SqlDataAdapter sda = new SqlDataAdapter())
                     {
@@ -56,6 +57,7 @@ namespace SITConnect.Models
                         cmd.Parameters.AddWithValue("@LockedDateTime",      user.LockedDateTime);
                         cmd.Parameters.AddWithValue("@PasswordHistory1",    user.PasswordHistory1);
                         cmd.Parameters.AddWithValue("@PasswordHistory2",    user.PasswordHistory2);
+                        cmd.Parameters.AddWithValue("@PasswordChangeTime",  user.PasswordChangeTime);
 
                         cmd.Connection = con;
                         con.Open();
@@ -230,6 +232,34 @@ namespace SITConnect.Models
             finally { connection.Close(); }
             return LockedDateTime;
         }
+        public string GetPasswordChangeTime(string email)
+        {
+            SqlConnection connection = new SqlConnection(connectionString);
+            string sql = "select PasswordChangeTime FROM Users WHERE Email=@EMAIL";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@EMAIL", email);
+
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["PasswordChangeTime"] != null)
+                        {
+                            PasswordChangeTime = reader["PasswordChangeTime"].ToString();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return PasswordChangeTime;
+        }
         public string GetDBHash(string email)
         {
             string hash = null;
@@ -333,7 +363,7 @@ namespace SITConnect.Models
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("UPDATE Users SET PasswordHash = @PasswordHash, PasswordHistory1 = @PasswordHistory1, PasswordHistory2 = @PasswordHistory2 WHERE Email = @EMAIL"))
+                using (SqlCommand cmd = new SqlCommand("UPDATE Users SET PasswordHash = @PasswordHash, PasswordHistory1 = @PasswordHistory1, PasswordHistory2 = @PasswordHistory2, PasswordChangeTime = @PasswordChangeTime WHERE Email = @EMAIL"))
                 {
                     using (SqlDataAdapter sda = new SqlDataAdapter())
                     {
@@ -353,6 +383,7 @@ namespace SITConnect.Models
                         cmd.Parameters.AddWithValue("@PasswordHash", finalHash);
                         cmd.Parameters.AddWithValue("@PasswordHistory1", finalHash);
                         cmd.Parameters.AddWithValue("@PasswordHistory2", oldPassword);
+                        cmd.Parameters.AddWithValue("@PasswordChangeTime", DateTime.Now);
 
                         cmd.Connection = con;
                         con.Open();
