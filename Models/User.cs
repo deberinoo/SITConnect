@@ -374,6 +374,7 @@ namespace SITConnect.Models
             SqlCommand command = new SqlCommand(sql, connection);
             command.Parameters.AddWithValue("@EMAIL", email);
 
+            // Retrieve values of PasswordHistory1 and PasswordHistory2
             try
             {
                 connection.Open();
@@ -398,15 +399,13 @@ namespace SITConnect.Models
             }
             finally { connection.Close(); }
 
-            // check if password matches passwordhistory1 and passwordhistory2
-            // checkpassword but the storedhash needs to be changed to passwordhistory1 and passwordhistory2
-            SHA512Managed hashing = new SHA512Managed();
-            string storedSalt = GetDBSalt(email);
+            // Salt new password with existing salt and hash
+            string salt = GetDBSalt(email);
+            string userHash = Security.HashWithExistingSalt(password, salt);
 
-            string passwordSalt = password + storedSalt;
-            byte[] hashSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(passwordSalt));
-            string userHash = Convert.ToBase64String(hashSalt);
-
+            // Compare new password hash to PasswordHistory1 and PasswordHistory2
+            // If new password hash matches any one of the PasswordHistory, set reusedPassword to true
+            // Else, set reusedPassword to false
             if (userHash.Equals(passwordHistory1) || userHash.Equals(passwordHistory2))
             {
                 reusedPassword = true;
