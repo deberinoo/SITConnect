@@ -1,5 +1,8 @@
 ﻿using SITConnect.Models;
+using SITConnect.Services;
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SITConnect
 {
@@ -31,15 +34,22 @@ namespace SITConnect
             // If currentpassword matches password stored in database
             if (user.CheckPassword(email, currentPassword))
             {
-                // Check if both passwords match
+                // If newPassword and confirmPassword does not match
                 if (newPassword != confirmPassword)
                 {
                     errorMsg.Text = "Passwords must match.";
                 }
+                // If matches, check if newPassword has been used before
                 else
                 {
-                    user.ChangePassword(email, newPassword);
-                    Response.Redirect("Login.aspx", false);
+                    if (user.CheckPasswordReuse(email, newPassword))
+                    {
+                        errorMsg.Text = "Passwords cannot be reused.";
+                    } else
+                    {
+                        user.ChangePassword(email, newPassword);
+                        Response.Redirect("Login.aspx", false);
+                    }
                 }
             }
             // Else, throw error message

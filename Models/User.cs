@@ -26,13 +26,15 @@ namespace SITConnect.Models
         public int FailedLoginAttempts { get; set; }
         public bool IsLocked { get; set; }
         public string LockedDateTime { get; set; }
+        public string PasswordHistory1 { get; set; }
+        public string PasswordHistory2 { get; set; }
 
 
         public bool CreateUser(User user)
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO Users VALUES(@Id,@FirstName,@LastName,@Email,@PasswordHash,@PasswordSalt,@BirthDate,@Image,@CardNumber,@CardExpiry,@CardCVV,@Key,@IV,@FailedLoginAttempts,@IsLocked,@LockedDateTime)"))
+                using (SqlCommand cmd = new SqlCommand("INSERT INTO Users VALUES(@Id,@FirstName,@LastName,@Email,@PasswordHash,@PasswordSalt,@BirthDate,@Image,@CardNumber,@CardExpiry,@CardCVV,@Key,@IV,@FailedLoginAttempts,@IsLocked,@LockedDateTime,@PasswordHistory1,@PasswordHistory2)"))
                 {
                     using (SqlDataAdapter sda = new SqlDataAdapter())
                     {
@@ -52,6 +54,8 @@ namespace SITConnect.Models
                         cmd.Parameters.AddWithValue("@FailedLoginAttempts", user.FailedLoginAttempts);
                         cmd.Parameters.AddWithValue("@IsLocked",            user.IsLocked);
                         cmd.Parameters.AddWithValue("@LockedDateTime",      user.LockedDateTime);
+                        cmd.Parameters.AddWithValue("@PasswordHistory1",    user.PasswordHistory1);
+                        cmd.Parameters.AddWithValue("@PasswordHistory2",    user.PasswordHistory2);
 
                         cmd.Connection = con;
                         con.Open();
@@ -82,48 +86,6 @@ namespace SITConnect.Models
             }
             connection.Close();
             return false;
-        }
-        public User GetUserByEmail(string email)
-        {
-            User user = null;
-
-            SqlConnection connection = new SqlConnection(connectionString);
-            string sql = "select * FROM Users WHERE Email=@EMAIL";
-            SqlCommand command = new SqlCommand(sql, connection);
-            command.Parameters.AddWithValue("@EMAIL", email);
-
-            try
-            {
-                connection.Open();
-                using (SqlDataReader reader = command.ExecuteReader())
-                {
-                    while (reader.Read())
-                    {
-                        user.Id                  = Convert.ToInt32(reader["Id"].ToString());
-                        user.FirstName           = reader["FirstName"].ToString();
-                        user.LastName            = reader["LastName"].ToString();
-                        user.Email               = reader["Email"].ToString();
-                        user.PasswordHash        = reader["PasswordHash"].ToString();
-                        user.PasswordSalt        = reader["PasswordSalt"].ToString();
-                        user.BirthDate           = reader["BirthDate"].ToString();
-                        user.Image               = Encoding.ASCII.GetBytes(reader["Image"].ToString());
-                        user.CardNumber          = reader["CardNumber"].ToString();
-                        user.CardExpiry          = reader["CardExpiry"].ToString();
-                        user.CardCVV             = reader["CardCVV"].ToString();
-                        user.Key                 = Encoding.ASCII.GetBytes(reader["Key"].ToString());
-                        user.IV                  = Encoding.ASCII.GetBytes(reader["IV"].ToString());
-                        user.FailedLoginAttempts = Convert.ToInt32(reader["FailedLoginAttempts"].ToString());
-                        user.IsLocked            = Convert.ToBoolean(reader["IsLocked"].ToString());
-                        user.LockedDateTime      = reader["LockedDateTime"].ToString();
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                throw new Exception(ex.ToString());
-            }
-            finally { connection.Close(); }
-            return user;
         }
         public bool CheckPassword(string email, string enteredPassword)
         {
@@ -371,20 +333,26 @@ namespace SITConnect.Models
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("UPDATE Users SET PasswordHash = @PasswordHash, PasswordSalt = @PasswordSalt WHERE Email = @EMAIL"))
+                using (SqlCommand cmd = new SqlCommand("UPDATE Users SET PasswordHash = @PasswordHash, PasswordHistory1 = @PasswordHistory1, PasswordHistory2 = @PasswordHistory2 WHERE Email = @EMAIL"))
                 {
                     using (SqlDataAdapter sda = new SqlDataAdapter())
                     {
+                        string oldPassword;
                         string finalHash;
                         string salt;
 
+                        // Retrieve old password
+                        oldPassword = GetDBHash(email);
+
                         // Hash new password
-                        (finalHash, salt) = Security.HashPassword(password);
+                        salt = GetDBSalt(email);
+                        finalHash = Security.HashWithExistingSalt(password, salt);
 
                         cmd.CommandType = CommandType.Text;
                         cmd.Parameters.AddWithValue("@Email", email);
                         cmd.Parameters.AddWithValue("@PasswordHash", finalHash);
-                        cmd.Parameters.AddWithValue("@PasswordSalt", salt);
+                        cmd.Parameters.AddWithValue("@PasswordHistory1", finalHash);
+                        cmd.Parameters.AddWithValue("@PasswordHistory2", oldPassword);
 
                         cmd.Connection = con;
                         con.Open();
@@ -394,6 +362,59 @@ namespace SITConnect.Models
                 }
             }
             return true;
+        }
+        public bool CheckPasswordReuse(string email, string password)
+        {
+            bool reusedPassword = false;
+            string passwordHistory1 = null;
+            string passwordHistory2 = null;
+
+            SqlConnection connection = new SqlConnection(connectionString);
+            string sql = "select PasswordHistory1, PasswordHistory2 FROM Users WHERE Email=@EMAIL";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@EMAIL", email);
+
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["PasswordHistory1"] != null)
+                        {
+                            if (reader["PasswordHistory1"] != DBNull.Value)
+                            {
+                                passwordHistory1 = reader["PasswordHistory1"].ToString();
+                                passwordHistory2 = reader["PasswordHistory2"].ToString();
+                            }
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+
+            // check if password matches passwordhistory1 and passwordhistory2
+            // checkpassword but the storedhash needs to be changed to passwordhistory1 and passwordhistory2
+            SHA512Managed hashing = new SHA512Managed();
+            string storedSalt = GetDBSalt(email);
+
+            string passwordSalt = password + storedSalt;
+            byte[] hashSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(passwordSalt));
+            string userHash = Convert.ToBase64String(hashSalt);
+
+            if (userHash.Equals(passwordHistory1) || userHash.Equals(passwordHistory2))
+            {
+                reusedPassword = true;
+            } else
+            {
+                reusedPassword = false;
+            }
+            return reusedPassword;
         }
     }
 }

@@ -24,6 +24,16 @@ namespace SITConnect.Services
             string finalHash = Convert.ToBase64String(hashWithSalt);
             return (finalHash, salt);
         }
+        public static string HashWithExistingSalt(string password, string salt)
+        {
+            SHA512Managed hashing = new SHA512Managed();
+
+            string passwordSalt = password + salt;
+            byte[] hashWithSalt = hashing.ComputeHash(Encoding.UTF8.GetBytes(passwordSalt));
+
+            string finalHash = Convert.ToBase64String(hashWithSalt);
+            return finalHash;
+        }
         public static string Encrypt(string text, byte[] Key, byte[] IV)
         {
             RijndaelManaged cipher = new RijndaelManaged();

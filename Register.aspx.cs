@@ -64,6 +64,8 @@ namespace SITConnect
                 user.FailedLoginAttempts = 0;
                 user.IsLocked = false;
                 user.LockedDateTime = DBNull.Value.ToString();
+                user.PasswordHistory1 = $"{finalHash};";
+                user.PasswordHistory2 = DBNull.Value.ToString();
 
                 user.CreateUser(user);
                 Response.Redirect("Login.aspx", false);

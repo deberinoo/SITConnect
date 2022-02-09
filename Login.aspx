@@ -46,9 +46,6 @@
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Enter your password" ControlToValidate="tb_password" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
                     <input type="hidden" id="g-recaptcha-response" name="g-recaptcha-response"/><br />
                 </div>
-                <div class="col-sm-10">
-                    <a href="ChangePassword.aspx">Change password</a>
-                </div>
             </div>
             <div class="form-group row">
                 <asp:Button ID="btn_login" runat="server" class="btn btn-primary btn-block" Text="Login" OnClick="btn_Login_Click" />
