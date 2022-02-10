@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Web;
 using SITConnect.Models;
 using SITConnect.Services;
 
@@ -17,7 +18,7 @@ namespace SITConnect
         protected void btn_sendEmail_Click(object sender, EventArgs e)
         {
             User user = new User();
-            string enteredCode = tb_activation.Text.ToString();
+            string enteredCode = HttpUtility.HtmlEncode(tb_activation.Text.ToString());
             string storedCode = user.GetVerificationCode(email);
             if (enteredCode == storedCode)
             {

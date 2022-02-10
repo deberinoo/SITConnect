@@ -42,7 +42,8 @@
                 <label class="col-sm-2 col-form-label">New password</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="password" class="form-control" ID="tb_npassword" placeholder="New password"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Enter your new password" ControlToValidate="tb_npassword" ForeColor="Red"></asp:RequiredFieldValidator>                    
+                    <small id="passwordHelp" class="form-text text-muted">Password needs a combination of at least 12 lower-case, upper-case, numbers & special characters.</small>
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator2" runat="server" ErrorMessage="Enter your new password" ControlToValidate="tb_npassword" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>                    
                     <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ErrorMessage="Enter a password that fulfils all the requirements" ForeColor="Red" Display="Dynamic" EnableClientScript="False"
                         ControlToValidate="tb_npassword" ValidationExpression="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$"></asp:RegularExpressionValidator>
                 </div>
@@ -51,7 +52,7 @@
                 <label class="col-sm-2 col-form-label">Confirm password</label>
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="password" class="form-control" ID="tb_cfpassword" placeholder="Confirm password"></asp:TextBox>
-                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ErrorMessage="Enter your new password again" ControlToValidate="tb_cfpassword" ForeColor="Red"></asp:RequiredFieldValidator>                    
+                    <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ErrorMessage="Enter your new password again" ControlToValidate="tb_cfpassword" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>                    
                     <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" ErrorMessage="Enter a password that fulfils all the requirements" ForeColor="Red" Display="Dynamic" EnableClientScript="False"
                         ControlToValidate="tb_cfpassword" ValidationExpression="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$"></asp:RegularExpressionValidator>
                 </div>

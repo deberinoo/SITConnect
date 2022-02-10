@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Security.Cryptography;
+using System.Text.RegularExpressions;
 using System.Web;
 using SITConnect.Models;
 using SITConnect.Services;
@@ -26,22 +27,25 @@ namespace SITConnect
             var user = new User();
             var log = new AuditLog();
 
-            if (user.CheckAccountExists(email))
+            if (Page.IsValid)
             {
-                lbl_email.Text = "Email already exists";
-            }
-            else
-            {
-                (finalHash, salt) = Security.HashPassword(password);
+                if (user.CheckAccountExists(email))
+                {
+                    lbl_email.Text = "Email already exists";
+                }
+                else
+                {
+                    (finalHash, salt) = Security.HashPassword(password);
 
-                RijndaelManaged cipher = new RijndaelManaged();
-                cipher.GenerateKey();
-                Key = cipher.Key;
-                IV = cipher.IV;
+                    RijndaelManaged cipher = new RijndaelManaged();
+                    cipher.GenerateKey();
+                    Key = cipher.Key;
+                    IV = cipher.IV;
 
-                createAccount();
-                sendVerification(email);
-                log.LogUserInformation(email, "register");
+                    createAccount();
+                    sendVerification(email);
+                    log.LogUserInformation(email, "register");
+                }
             }
         }
         protected void createAccount()
@@ -50,25 +54,25 @@ namespace SITConnect
             {
                 User user = new User();
                 user.Id = Security.GenerateRandomNumber();
-                user.FirstName = tb_fname.Text.Trim();
-                user.LastName = tb_fname.Text.Trim();
-                user.Email = tb_email.Text.Trim();
-                user.PasswordHash = finalHash;
-                user.PasswordSalt = salt;
-                user.BirthDate = tb_dob.Text.Trim();
-                user.Image = Image;
-                user.CardNumber = Security.Encrypt(tb_cardnum.Text.Trim(), Key, IV);
-                user.CardExpiry = Security.Encrypt(tb_cardexp.Text.Trim(), Key, IV);
-                user.CardCVV = Security.Encrypt(tb_cardcvv.Text.Trim(), Key, IV);
-                user.Key = Key;
-                user.IV = IV;
+                user.FirstName          = HttpUtility.HtmlEncode(tb_fname.Text.Trim());
+                user.LastName           = HttpUtility.HtmlEncode(tb_fname.Text.Trim());
+                user.Email              = HttpUtility.HtmlEncode(tb_email.Text.Trim());
+                user.PasswordHash       = finalHash;
+                user.PasswordSalt       = salt;
+                user.BirthDate          = HttpUtility.HtmlEncode(tb_dob.Text.Trim());
+                user.Image              = Image;
+                user.CardNumber         = Security.Encrypt(tb_cardnum.Text.Trim(), Key, IV);
+                user.CardExpiry         = Security.Encrypt(tb_cardexp.Text.Trim(), Key, IV);
+                user.CardCVV            = Security.Encrypt(tb_cardcvv.Text.Trim(), Key, IV);
+                user.Key                = Key;
+                user.IV                 = IV;
                 user.FailedLoginAttempts = 0;
-                user.IsLocked = false;
-                user.LockedDateTime = DBNull.Value.ToString();
-                user.PasswordHistory1 = finalHash;
-                user.PasswordHistory2 = DBNull.Value.ToString();
+                user.IsLocked           = false;
+                user.LockedDateTime     = DBNull.Value.ToString();
+                user.PasswordHistory1   = finalHash;
+                user.PasswordHistory2   = DBNull.Value.ToString();
                 user.PasswordChangeTime = DBNull.Value.ToString();
-                user.VerificationCode = DBNull.Value.ToString();
+                user.VerificationCode   = DBNull.Value.ToString();
 
                 user.CreateUser(user);
                 sendVerification(tb_email.Text.Trim());

@@ -4,6 +4,7 @@ using System.Net;
 using System.IO;
 using System.Web.Script.Serialization;
 using SITConnect.Models;
+using System.Web;
 
 namespace SITConnect
 {
@@ -48,8 +49,8 @@ namespace SITConnect
             var user = new User();
             var log = new AuditLog();
 
-            string password = tb_password.Text.ToString().Trim();
-            string email = tb_email.Text.ToString().Trim();
+            string password = HttpUtility.HtmlEncode(tb_password.Text.ToString().Trim());
+            string email = HttpUtility.HtmlEncode(tb_email.Text.ToString().Trim());
             StoredLockedDateTime = Convert.ToDateTime(user.GetLockedOutTime(email));
 
             if (ValidateCaptcha())

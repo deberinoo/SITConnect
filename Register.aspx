@@ -4,7 +4,7 @@
 
 <html xmlns="http://www.w3.org/1999/xhtml">
 <head runat="server">
-    <title>Register Account</title>
+    <title>Register</title>
     <link rel="stylesheet" href="site.css" />
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous" />
 </head>
@@ -59,8 +59,8 @@
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="password" class="form-control" ID="tb_password" placeholder="Password"></asp:TextBox>
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator4" runat="server" ErrorMessage="Enter a password" ControlToValidate="tb_password" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
-                    <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ErrorMessage="Enter a password that fulfils all the requirements" ForeColor="Red" Display="Dynamic" EnableClientScript="False"
-                        ControlToValidate="tb_email" ValidationExpression="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$"></asp:RegularExpressionValidator>
+                    <asp:RegularExpressionValidator ID="RegularExpressionValidator2" runat="server" ErrorMessage="Enter a password that fulfils all the requirements" ForeColor="Red" Display="Dynamic" EnableClientScript="True"
+                        ControlToValidate="tb_password" ValidationExpression="^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{12,}$"></asp:RegularExpressionValidator>
                     <span class="show-pass" onclick="toggle()">
                         <i class="far fa-eye" onclick="myFunction(this)"></i>
                     </span>

@@ -1,6 +1,7 @@
 ﻿using SITConnect.Models;
 using SITConnect.Services;
 using System;
+using System.Web;
 
 namespace SITConnect
 {
@@ -26,9 +27,9 @@ namespace SITConnect
             User user = new User();
             string email = Session["LoggedIn"].ToString();
 
-            string currentPassword = tb_cpassword.Text.ToString().Trim();
-            string newPassword = tb_npassword.Text.ToString().Trim();
-            string confirmPassword = tb_cfpassword.Text.ToString().Trim();
+            string currentPassword = HttpUtility.HtmlEncode(tb_cpassword.Text.ToString().Trim());
+            string newPassword = HttpUtility.HtmlEncode(tb_npassword.Text.ToString().Trim());
+            string confirmPassword = HttpUtility.HtmlEncode(tb_cfpassword.Text.ToString().Trim());
             StoredPasswordChangeTime = Convert.ToDateTime(user.GetPasswordChangeTime(email));
 
             // Hash new password and confirm password to compare if it matches
