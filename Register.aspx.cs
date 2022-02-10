@@ -40,6 +40,7 @@ namespace SITConnect
                 IV = cipher.IV;
 
                 createAccount();
+                sendVerification(email);
                 log.LogUserInformation(email, "register");
             }
         }
@@ -67,9 +68,11 @@ namespace SITConnect
                 user.PasswordHistory1 = finalHash;
                 user.PasswordHistory2 = DBNull.Value.ToString();
                 user.PasswordChangeTime = DBNull.Value.ToString();
+                user.VerificationCode = DBNull.Value.ToString();
 
                 user.CreateUser(user);
-                Response.Redirect("Login.aspx", false);
+                sendVerification(tb_email.Text.Trim());
+                Response.Redirect(String.Format("VerifyEmail.aspx?email={0}", tb_email.Text.Trim(), 0));
             }
         }
         protected bool validateFile()
@@ -90,6 +93,13 @@ namespace SITConnect
                 imageError.Text = "Only files with the following extensions are allowed: jpg bmp gif png";
                 return false;
             }
+        }
+        protected void sendVerification(string user_email)
+        {
+            Email email = new Email();
+            string code = Security.GenerateOTP();
+            email.saveVerificationCode(user_email, code);
+            email.sendVerificationCode(user_email, code);
         }
     }
 }

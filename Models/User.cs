@@ -29,13 +29,14 @@ namespace SITConnect.Models
         public string PasswordHistory1 { get; set; }
         public string PasswordHistory2 { get; set; }
         public string PasswordChangeTime { get; set; }
+        public string VerificationCode { get; set; }
 
 
         public bool CreateUser(User user)
         {
             using (SqlConnection con = new SqlConnection(connectionString))
             {
-                using (SqlCommand cmd = new SqlCommand("INSERT INTO Users VALUES(@Id,@FirstName,@LastName,@Email,@PasswordHash,@PasswordSalt,@BirthDate,@Image,@CardNumber,@CardExpiry,@CardCVV,@Key,@IV,@FailedLoginAttempts,@IsLocked,@LockedDateTime,@PasswordHistory1,@PasswordHistory2,@PasswordChangeTime)"))
+                using (SqlCommand cmd = new SqlCommand("INSERT INTO Users VALUES(@Id,@FirstName,@LastName,@Email,@PasswordHash,@PasswordSalt,@BirthDate,@Image,@CardNumber,@CardExpiry,@CardCVV,@Key,@IV,@FailedLoginAttempts,@IsLocked,@LockedDateTime,@PasswordHistory1,@PasswordHistory2,@PasswordChangeTime,@VerificationCode)"))
                 {
                     using (SqlDataAdapter sda = new SqlDataAdapter())
                     {
@@ -58,6 +59,7 @@ namespace SITConnect.Models
                         cmd.Parameters.AddWithValue("@PasswordHistory1",    user.PasswordHistory1);
                         cmd.Parameters.AddWithValue("@PasswordHistory2",    user.PasswordHistory2);
                         cmd.Parameters.AddWithValue("@PasswordChangeTime",  user.PasswordChangeTime);
+                        cmd.Parameters.AddWithValue("@VerificationCode",    user.VerificationCode);
 
                         cmd.Connection = con;
                         con.Open();
@@ -445,6 +447,35 @@ namespace SITConnect.Models
                 reusedPassword = false;
             }
             return reusedPassword;
+        }
+        public string GetVerificationCode(string email)
+        {
+            string code = null; 
+            SqlConnection connection = new SqlConnection(connectionString);
+            string sql = "select VerificationCode FROM Users WHERE Email=@EMAIL";
+            SqlCommand command = new SqlCommand(sql, connection);
+            command.Parameters.AddWithValue("@EMAIL", email);
+
+            try
+            {
+                connection.Open();
+                using (SqlDataReader reader = command.ExecuteReader())
+                {
+                    while (reader.Read())
+                    {
+                        if (reader["VerificationCode"] != null)
+                        {
+                            code = reader["VerificationCode"].ToString();
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                throw new Exception(ex.ToString());
+            }
+            finally { connection.Close(); }
+            return code;
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using SITConnect.Models;
+using SITConnect.Services;
 using System;
 
 namespace SITConnect
@@ -30,7 +31,12 @@ namespace SITConnect
             string confirmPassword = tb_cfpassword.Text.ToString().Trim();
             StoredPasswordChangeTime = Convert.ToDateTime(user.GetPasswordChangeTime(email));
 
-            // check time
+            // Hash new password and confirm password to compare if it matches
+            string salt = user.GetDBSalt(email);
+            string hashedNewPassword = Security.HashWithExistingSalt(newPassword, salt);
+            string hashedConfirmPassword = Security.HashWithExistingSalt(confirmPassword, salt);
+
+            // Check time passed since last password change
             TimeSpan timespan = (DateTime.Now).Subtract(StoredPasswordChangeTime);
             Int32 minutesLocked = Convert.ToInt32(timespan.TotalMinutes);
             Int32 pendingMinutes = 1 - minutesLocked;
@@ -45,7 +51,8 @@ namespace SITConnect
                 if (user.CheckPassword(email, currentPassword))
                 {
                     // If newPassword and confirmPassword does not match
-                    if (newPassword != confirmPassword)
+
+                    if (hashedNewPassword != hashedConfirmPassword)
                     {
                         errorMsg.Text = "Passwords must match.";
                     }
