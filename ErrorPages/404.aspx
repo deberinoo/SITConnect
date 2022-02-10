@@ -25,7 +25,7 @@
     <!-- Page content-->
     <div class="container">
         <div class="text-center mt-5">
-            <h1>Oops!</h1>
+            <h1>404</h1>
             <p class="lead">This page cannot be found</p>
             <a href="/Home.aspx">Return to the homepage</a>
         </div>

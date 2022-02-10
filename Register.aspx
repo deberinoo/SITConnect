@@ -49,7 +49,7 @@
                 <div class="col-sm-10">
                     <asp:TextBox runat="server" type="text" class="form-control" ID="tb_email" placeholder="Email Address"></asp:TextBox>
                     <asp:RequiredFieldValidator ID="RequiredFieldValidator3" runat="server" ErrorMessage="Enter your email address" ControlToValidate="tb_email" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>                
-                    <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" ErrorMessage="Enter a valid email address" ForeColor="Red" Display="Dynamic" EnableClientScript="False"
+                    <asp:RegularExpressionValidator ID="RegularExpressionValidator1" runat="server" ErrorMessage="Enter a valid email address" ForeColor="Red" Display="Dynamic" EnableClientScript="True"
                         ControlToValidate="tb_email" ValidationExpression="^[^@\s]+@[^@\s]+\.[^@\s]+$"></asp:RegularExpressionValidator>
                     <asp:Label runat="server" ID="lbl_email" ForeColor="Red"></asp:Label>
                 </div>
@@ -127,20 +127,20 @@
                     <div class="col-5">
                         <asp:TextBox runat="server" type="text" class="form-control" ID="tb_cardnum" placeholder="Card Number"></asp:TextBox>
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator7" runat="server" ErrorMessage="Enter your card number" ControlToValidate="tb_cardnum" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
-                        <asp:RegularExpressionValidator ID="RegularExpressionValidator3" runat="server" ErrorMessage="Enter a valid card number" ForeColor="Red" Display="Dynamic" EnableClientScript="false"
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator3" runat="server" ErrorMessage="Enter a valid card number" ForeColor="Red" Display="Dynamic" EnableClientScript="True"
                             ControlToValidate="tb_cardnum" ValidationExpression="^4[0-9]{12}(?:[0-9]{3})?$">
                         </asp:RegularExpressionValidator>
                     </div>
                     <div class="col">
                         <asp:TextBox runat="server" type="text" class="form-control" ID="tb_cardexp" placeholder="Expiry Date (MMYY)"></asp:TextBox>
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator8" runat="server" ErrorMessage="Enter your card expiry date" ControlToValidate="tb_cardexp" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
-                        <asp:RegularExpressionValidator ID="RegularExpressionValidator4" runat="server" ErrorMessage="Enter a valid card expiry date" ForeColor="Red" Display="Dynamic" EnableClientScript="false"
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator4" runat="server" ErrorMessage="Enter a valid card expiry date" ForeColor="Red" Display="Dynamic" EnableClientScript="True"
                             ControlToValidate="tb_cardexp" ValidationExpression="\d{4}"></asp:RegularExpressionValidator>
                     </div>
                     <div class="col">
                         <asp:TextBox runat="server" type="text" class="form-control" ID="tb_cardcvv" placeholder="CVV"></asp:TextBox>
                         <asp:RequiredFieldValidator ID="RequiredFieldValidator9" runat="server" ErrorMessage="Enter your card CVV" ControlToValidate="tb_cardcvv" ForeColor="Red" Display="Dynamic"></asp:RequiredFieldValidator>
-                        <asp:RegularExpressionValidator ID="RegularExpressionValidator" runat="server" ErrorMessage="Enter a valid card number" ForeColor="Red" Display="Dynamic" EnableClientScript="false"
+                        <asp:RegularExpressionValidator ID="RegularExpressionValidator" runat="server" ErrorMessage="Enter a valid card number" ForeColor="Red" Display="Dynamic" EnableClientScript="True"
                             ControlToValidate="tb_cardcvv" ValidationExpression="\d{3}"></asp:RegularExpressionValidator>
                     </div>
             </div>

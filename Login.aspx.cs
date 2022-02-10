@@ -68,38 +68,46 @@ namespace SITConnect
                 // If incorrect, increment failed login attempts
                 else
                 {
-                    if (user.CheckPassword(email, password))
+                    // Checks if email belongs to an account
+                    if (user.CheckAccountExists(email))
                     {
-                        // Create session
-                        Session["LoggedIn"] = email;
-                        string guid = Guid.NewGuid().ToString();
-                        Session["AuthToken"] = guid;
-                        Response.Cookies.Add(new System.Web.HttpCookie("AuthToken", guid));
-                        Response.Redirect("Profile.aspx", false);
+                        if (user.CheckPassword(email, password))
+                        {
+                            // Create session
+                            Session["LoggedIn"] = email;
+                            string guid = Guid.NewGuid().ToString();
+                            Session["AuthToken"] = guid;
+                            Response.Cookies.Add(new System.Web.HttpCookie("AuthToken", guid));
+                            Response.Redirect("Profile.aspx", false);
 
-                        user.ResetFailedLoginAttempts(email);
-                        log.LogUserInformation(email, "login");
+                            user.ResetFailedLoginAttempts(email);
+                            log.LogUserInformation(email, "login");
+                        }
+                        else
+                        {
+                            log.LogUserInformation(email, "fail");
+                            FailedLoginAttempts = user.GetFailedLoginAttempts(email);
+                            FailedLoginAttempts++;
+                            user.UpdateFailedLoginAttempts(email, FailedLoginAttempts);
+                            if (FailedLoginAttempts == 1)
+                            {
+                                errorMsg.Text = "Email or password is not valid. 2 login attempts remaining.";
+                            }
+                            else if (FailedLoginAttempts == 2)
+                            {
+                                errorMsg.Text = "Email or password is not valid. 1 login attempt remaining";
+                            }
+                            else if (FailedLoginAttempts >= 3)
+                            {
+                                errorMsg.Text = "Your account has been locked. Please try again later.";
+                                user.LockOutUser(email);
+                                log.LogUserInformation(email, "lock");
+                            }
+                        }
                     }
                     else
                     {
-                        log.LogUserInformation(email, "fail");
-                        FailedLoginAttempts = user.GetFailedLoginAttempts(email);
-                        FailedLoginAttempts++;
-                        user.UpdateFailedLoginAttempts(email, FailedLoginAttempts);
-                        if (FailedLoginAttempts == 1)
-                        {
-                            errorMsg.Text = "Email or password is not valid. 2 login attempts remaining.";
-                        }
-                        else if (FailedLoginAttempts == 2)
-                        {
-                            errorMsg.Text = "Email or password is not valid. 1 login attempt remaining";
-                        }
-                        else if (FailedLoginAttempts >= 3)
-                        {
-                            errorMsg.Text = "Your account has been locked. Please try again later.";
-                            user.LockOutUser(email);
-                            log.LogUserInformation(email, "lock");
-                        }
+                        errorMsg.Text = "Email address and password do not match our records. Please try again.";
                     }
                 }
             }

@@ -54,7 +54,7 @@ namespace SITConnect.Services
         }
         public static string GenerateOTP()
         {
-            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+            var chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
             var stringChars = new char[5];
             var random = new Random();
 
