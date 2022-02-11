@@ -76,7 +76,7 @@ namespace SITConnect
 
                 user.CreateUser(user);
                 sendVerification(tb_email.Text.Trim());
-                Response.Redirect(String.Format("VerifyEmail.aspx?email={0}", tb_email.Text.Trim(), 0));
+                Response.Redirect(String.Format("VerifyEmail.aspx?email={0}", HttpUtility.HtmlEncode(tb_email.Text.Trim()), 0));
             }
         }
         protected bool validateFile()
