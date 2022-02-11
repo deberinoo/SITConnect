@@ -24,7 +24,7 @@ namespace SITConnect
             string captchaResponse = Request.Form["g-recaptcha-response"];
 
             HttpWebRequest req = (HttpWebRequest)WebRequest.Create
-            (" https://www.google.com/recaptcha/api/siteverify?secret=6LfWMyUeAAAAABrobJOKljjBi6XVT7i5Z9BnqRFW &response=" + captchaResponse);
+            (" https://www.google.com/recaptcha/api/siteverify?secret= &response=" + captchaResponse);
             
             try
             {
@@ -53,8 +53,8 @@ namespace SITConnect
             string email = HttpUtility.HtmlEncode(tb_email.Text.ToString().Trim());
             StoredLockedDateTime = Convert.ToDateTime(user.GetLockedOutTime(email));
 
-            if (ValidateCaptcha())
-            {
+            //if (ValidateCaptcha())
+            //{
                 // Check time difference between time now and stored locked date time
                 TimeSpan timespan = (DateTime.Now).Subtract(StoredLockedDateTime);
                 Int32 minutesLocked = Convert.ToInt32(timespan.TotalMinutes);
@@ -111,7 +111,7 @@ namespace SITConnect
                         errorMsg.Text = "Email address and password do not match our records. Please try again.";
                     }
                 }
-            }
+            //}
         }
     }
 }

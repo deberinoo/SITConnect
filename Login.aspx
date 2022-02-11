@@ -54,14 +54,5 @@
     </div>
     <!-- Bootstrap core JS-->
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- Google Captcha API-->
-    <script src="https://www.google.com/recaptcha/api.js?render=6LfWMyUeAAAAAKhiHH71ybVEEGhUnI2SmVB1yZMg"></script>
-    <script>
-         grecaptcha.ready(function () {
-             grecaptcha.execute('6LfWMyUeAAAAAKhiHH71ybVEEGhUnI2SmVB1yZMg', { action: 'Login' }).then(function (token) {
-            document.getElementById("g-recaptcha-response").value = token;
-            });
-         });
-    </script>
 </body>
 </html>
